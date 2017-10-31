@@ -1,7 +1,7 @@
 #include <Homie_Helper.h>
 #include <ArduinoOTA.h>
 
-void ota_setup(String password, byte led) {
+void ota_setup(char* password, byte led) {
   ArduinoOTA.setPassword(password);
   ArduinoOTA.onStart([]() {});
   ArduinoOTA.onEnd([]() {
