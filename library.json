@@ -1,0 +1,14 @@
+{
+    "name": "Homie_Helper",
+    "version": "1.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/usatenko/homie-nodemcu-helper",
+		"branch": "master"
+	  },
+    "export": {
+        "include": "OneWire"
+    },
+    "frameworks": "arduino",
+    "platforms": "espressif8266"
+}
