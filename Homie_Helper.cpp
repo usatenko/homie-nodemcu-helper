@@ -1,6 +1,7 @@
 #include <Homie.h>
 #include <Homie_Helper.h>
 #include <ArduinoOTA.h>
+#include <EEPROM.h>
 
 void ota_setup(char* password) {
   ArduinoOTA.setPassword(password);
@@ -33,13 +34,38 @@ void ota_setup(char* password) {
 void ota_handle() {
   ArduinoOTA.handle();
 }
-void readSend(HomieNode* n, Data* d, Setting* s, double (*f)()){
-    if (millis() - d->lastRead >= s->intervalRead) {
-        double v = (*f)();
-        if (!isnan(v) && v != d->vLast && millis() - d->lastSent >= s->intervalSend) {
-          d->vLast = v;
-          n->setProperty("value").send(String(v));
-          d->lastSent = millis();
-        }
+void readSend(HomieNode& n, Data& d, Setting& s, double (*f)()){
+  if (millis() - d.lastRead >= s.intervalRead) {
+    double v = (*f)();
+    if (!isnan(v) && d.vLast != v && d.vCurr == DBL_MAX) {
+      d.vLast = v;
+      d.vCurr = v;
     }
+    if (millis() - d.lastSent >= s.intervalSend && d.vLast != DBL_MAX) {
+      n.setProperty("value").send(String(d.vLast));
+      d.lastSent = millis();
+      d.vCurr = DBL_MAX;
+    }
+  }
+}
+
+String stateConvert(int v) {
+  if (v != LOW && v != HIGH) {
+    return "false";
+  } else {
+    return v == LOW ? "false" : "true";
+  }
+}
+
+void writeSend(const HomieRange&, const String& value, HomieNode& n, Setting& s) {
+  String val = value;
+  if (val == "on") {
+    stateConvert(EEPROM.read(s.eeprom));
+  }
+  if (val != "true" && val != "false") return;
+  int on = (val == "true") ? HIGH : LOW;
+  digitalWrite(s.pin, on);
+  EEPROM.write(s.eeprom, on);
+  EEPROM.commit();
+  n.setProperty("state").send(val);
 }
