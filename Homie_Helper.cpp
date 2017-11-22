@@ -29,6 +29,7 @@ void ota_setup(char* password) {
     else if (error == OTA_END_ERROR);      // End failed
   });
   ArduinoOTA.begin();
+  Homie.getMqttClient().setKeepAlive(10);
 }
 
 void ota_handle() {
