@@ -20,7 +20,7 @@ typedef std::function<double()> THandlerFunction_Reader;
 void ota_setup(char* password);
 void ota_handle();
 
-void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader);
+void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader& f);
 void writeSend(const HomieRange&, const String& val, HomieNode& n, Setting& s);
 String stateConvert(int v);
 

@@ -35,7 +35,7 @@ void ota_setup(char* password) {
 void ota_handle() {
   ArduinoOTA.handle();
 }
-void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader r){
+void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader& r){
   if (millis() - d.lastRead >= s.intervalRead) {
     double v = r();
     if (!isnan(v) && d.vLast != v && d.vCurr == DBL_MAX) {
