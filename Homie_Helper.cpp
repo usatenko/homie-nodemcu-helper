@@ -3,6 +3,22 @@
 #include <ArduinoOTA.h>
 #include <EEPROM.h>
 
+long lastConnected = millis();
+long lastDisconnected = millis();
+void onHomieEvent(const HomieEvent& event) {
+  switch(event.type) {
+    case HomieEventType::MQTT_READY:
+      // Do whatever you want when MQTT is connected in normal mode
+      lastConnected = millis();
+      break;
+    case HomieEventType::MQTT_DISCONNECTED:
+      // Do whatever you want when MQTT is disconnected in normal mode
+      lastDisconnected = millis();
+      // You can use event.mqttReason
+      break;
+  }
+}
+
 void ota_setup(char* password) {
   ArduinoOTA.setPassword(password);
   ArduinoOTA.onStart([]() {});
@@ -30,22 +46,6 @@ void ota_setup(char* password) {
   });
   ArduinoOTA.begin();
   Homie.onEvent(onHomieEvent);
-}
-
-long lastConnected = millis();
-long lastDisconnected = millis();
-void onHomieEvent(const HomieEvent& event) {
-  switch(event.type) {
-    case HomieEventType::MQTT_READY:
-      // Do whatever you want when MQTT is connected in normal mode
-      lastConnected = millis();
-      break;
-    case HomieEventType::MQTT_DISCONNECTED:
-      // Do whatever you want when MQTT is disconnected in normal mode
-      lastDisconnected = millis();
-      // You can use event.mqttReason
-      break;
-  }
 }
 
 void ota_handle() {
