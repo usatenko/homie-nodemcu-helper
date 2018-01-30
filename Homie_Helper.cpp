@@ -4,7 +4,7 @@
 #include <EEPROM.h>
 
 long lastConnected = millis();
-long lastDisconnected = millis();
+long lastDisconnected = lastConnected;
 void onHomieEvent(const HomieEvent& event) {
   switch(event.type) {
     case HomieEventType::MQTT_READY:
@@ -17,6 +17,10 @@ void onHomieEvent(const HomieEvent& event) {
       // You can use event.mqttReason
       break;
   }
+}
+
+void pre_setup() {
+  Homie.onEvent(onHomieEvent);
 }
 
 void ota_setup(char* password) {
@@ -45,14 +49,13 @@ void ota_setup(char* password) {
     else if (error == OTA_END_ERROR);      // End failed
   });
   ArduinoOTA.begin();
-  Homie.onEvent(onHomieEvent);
 }
 
 void ota_handle() {
-  ArduinoOTA.handle();
   if (lastDisconnected > lastConnected && millis() - lastDisconnected > 10 * 1000) {
     ESP.restart();
   }
+  ArduinoOTA.handle();
 }
 void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader& r){
   if (millis() - d.lastRead >= s.intervalRead) {

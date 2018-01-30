@@ -17,6 +17,7 @@ typedef struct {
 } Data;
 typedef std::function<double()> THandlerFunction_Reader;
 
+void pre_setup();
 void ota_setup(char* password);
 void ota_handle();
 
