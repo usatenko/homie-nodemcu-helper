@@ -14,7 +14,7 @@ void onHomieEvent(const HomieEvent& event) {
     case HomieEventType::MQTT_DISCONNECTED:
       // Do whatever you want when MQTT is disconnected in normal mode
       lastDisconnected = millis();
-      ESP.restart();
+//      ESP.restart();
       // You can use event.mqttReason
       break;
   }
@@ -54,7 +54,7 @@ void ota_setup(char* password) {
 
 void ota_handle() {
 //  if (lastDisconnected > lastConnected && millis() - lastDisconnected > 10 * 1000) {
-    ESP.restart();
+//    ESP.restart();
 //  }
   ArduinoOTA.handle();
 }
