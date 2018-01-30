@@ -29,10 +29,30 @@ void ota_setup(char* password) {
     else if (error == OTA_END_ERROR);      // End failed
   });
   ArduinoOTA.begin();
+  Homie.onEvent(onHomieEvent);
+}
+
+long lastConnected = millis();
+long lastDisconnected = millis();
+void onHomieEvent(const HomieEvent& event) {
+  switch(event.type) {
+    case HomieEventType::MQTT_READY:
+      // Do whatever you want when MQTT is connected in normal mode
+      lastConnected = millis();
+      break;
+    case HomieEventType::MQTT_DISCONNECTED:
+      // Do whatever you want when MQTT is disconnected in normal mode
+      lastDisconnected = millis();
+      // You can use event.mqttReason
+      break;
+  }
 }
 
 void ota_handle() {
   ArduinoOTA.handle();
+  if (lastDisconnected > lastConnected && millis() - lastDisconnected > 10 * 1000) {
+    ESP.restart();
+  }
 }
 void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader& r){
   if (millis() - d.lastRead >= s.intervalRead) {
