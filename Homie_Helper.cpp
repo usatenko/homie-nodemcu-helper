@@ -3,11 +3,23 @@
 #include <ArduinoOTA.h>
 #include <EEPROM.h>
 
-long lastConnected = 0;
-long lastDisconnected = millis();
+long lastWifiConnected = 0;
+long lastWifiDisconnected = millis();
+long lastMqttConnected = 0;
+long lastMqttDisconnected = millis();
 bool restartInitiated = false;
 void onHomieEvent(const HomieEvent& event) {
   switch(event.type) {
+    case HomieEventType::WIFI_CONNECTED:
+      // Do whatever you want when Wi-Fi is connected in normal mode
+      lastWifiConnected = millis()
+      // You can use event.ip, event.gateway, event.mask
+      break;
+    case HomieEventType::WIFI_DISCONNECTED:
+      // Do whatever you want when Wi-Fi is disconnected in normal mode
+      lastWifiDisconnected = millis();
+      // You can use event.wifiReason
+      break;
     case HomieEventType::MQTT_READY:
       // Do whatever you want when MQTT is connected in normal mode
       lastConnected = millis();
@@ -56,7 +68,7 @@ void pre_loop() {
 }
 
 void post_loop() {
-  if (lastDisconnected > lastConnected && millis() - lastDisconnected > 120 * 1000 && !restartInitiated) {
+  if ((lastMqttDisconnected > lastMqttConnected && millis() - lastMqttDisconnected > 120 * 1000 || lastWifiDisconnected > lastWifiConnected && millis() - lastWifiDisconnected > 120 * 1000) && !restartInitiated) {
     restartInitiated = true;
     Serial.println("Restarting");
     ESP.restart();
