@@ -12,7 +12,7 @@ void onHomieEvent(const HomieEvent& event) {
   switch(event.type) {
     case HomieEventType::WIFI_CONNECTED:
       // Do whatever you want when Wi-Fi is connected in normal mode
-      lastWifiConnected = millis()
+      lastWifiConnected = millis();
       // You can use event.ip, event.gateway, event.mask
       break;
     case HomieEventType::WIFI_DISCONNECTED:
@@ -22,11 +22,11 @@ void onHomieEvent(const HomieEvent& event) {
       break;
     case HomieEventType::MQTT_READY:
       // Do whatever you want when MQTT is connected in normal mode
-      lastConnected = millis();
+      lastMqttConnected = millis();
       break;
     case HomieEventType::MQTT_DISCONNECTED:
       // Do whatever you want when MQTT is disconnected in normal mode
-      lastDisconnected = millis();
+      lastMqttDisconnected = millis();
       // You can use event.mqttReason
       break;
   }
