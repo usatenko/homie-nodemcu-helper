@@ -56,7 +56,7 @@ void pre_loop() {
 }
 
 void post_loop() {
-  if (lastDisconnected > lastConnected && millis() - lastDisconnected > 10 * 1000 && !restartInitiated) {
+  if (lastDisconnected > lastConnected && millis() - lastDisconnected > 120 * 1000 && !restartInitiated) {
     restartInitiated = true;
     Serial.println("Restarting");
     ESP.restart();
