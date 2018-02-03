@@ -3,8 +3,9 @@
 #include <ArduinoOTA.h>
 #include <EEPROM.h>
 
-long lastConnected = millis();
-long lastDisconnected = lastConnected;
+long lastConnected = 0;
+long lastDisconnected = millis();
+bool restartInitiated = false;
 void onHomieEvent(const HomieEvent& event) {
   switch(event.type) {
     case HomieEventType::MQTT_READY:
@@ -14,7 +15,6 @@ void onHomieEvent(const HomieEvent& event) {
     case HomieEventType::MQTT_DISCONNECTED:
       // Do whatever you want when MQTT is disconnected in normal mode
       lastDisconnected = millis();
-//      ESP.restart();
       // You can use event.mqttReason
       break;
   }
@@ -24,8 +24,8 @@ void pre_setup() {
   Homie.onEvent(onHomieEvent);
 }
 
-void ota_setup(char* password) {
-  ArduinoOTA.setPassword(password);
+void post_setup(char* ota_password) {
+  ArduinoOTA.setPassword(ota_password);
   ArduinoOTA.onStart([]() {});
   ArduinoOTA.onEnd([]() {
     digitalWrite(D0, LOW);
@@ -52,10 +52,15 @@ void ota_setup(char* password) {
   ArduinoOTA.begin();
 }
 
-void ota_handle() {
-//  if (lastDisconnected > lastConnected && millis() - lastDisconnected > 10 * 1000) {
-//    ESP.restart();
-//  }
+void pre_loop() {
+}
+
+void post_loop() {
+  if (lastDisconnected > lastConnected && millis() - lastDisconnected > 10 * 1000 && !restartInitiated) {
+    restartInitiated = true;
+    Serial.println("Restarting");
+    ESP.restart();
+  }
   ArduinoOTA.handle();
 }
 void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader& r){

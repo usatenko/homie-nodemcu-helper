@@ -18,8 +18,9 @@ typedef struct {
 typedef std::function<double()> THandlerFunction_Reader;
 
 void pre_setup();
-void ota_setup(char* password);
-void ota_handle();
+void post_setup(char* ota_password);
+void pre_loop();
+void post_loop();
 
 void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader& f);
 void writeSend(const HomieRange&, const String& val, HomieNode& n, Setting& s);
