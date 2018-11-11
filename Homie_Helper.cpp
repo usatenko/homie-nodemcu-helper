@@ -3,8 +3,41 @@
 #include <ArduinoOTA.h>
 #include <EEPROM.h>
 
-void ota_setup(char* password) {
-  ArduinoOTA.setPassword(password);
+long lastWifiConnected = 0;
+long lastWifiDisconnected = millis();
+long lastMqttConnected = 0;
+long lastMqttDisconnected = millis();
+bool restartInitiated = false;
+void onHomieEvent(const HomieEvent& event) {
+  switch(event.type) {
+    case HomieEventType::WIFI_CONNECTED:
+      // Do whatever you want when Wi-Fi is connected in normal mode
+      lastWifiConnected = millis();
+      // You can use event.ip, event.gateway, event.mask
+      break;
+    case HomieEventType::WIFI_DISCONNECTED:
+      // Do whatever you want when Wi-Fi is disconnected in normal mode
+      lastWifiDisconnected = millis();
+      // You can use event.wifiReason
+      break;
+    case HomieEventType::MQTT_READY:
+      // Do whatever you want when MQTT is connected in normal mode
+      lastMqttConnected = millis();
+      break;
+    case HomieEventType::MQTT_DISCONNECTED:
+      // Do whatever you want when MQTT is disconnected in normal mode
+      lastMqttDisconnected = millis();
+      // You can use event.mqttReason
+      break;
+  }
+}
+
+void pre_setup() {
+  Homie.onEvent(onHomieEvent);
+}
+
+void post_setup(char* ota_password) {
+  ArduinoOTA.setPassword(ota_password);
   ArduinoOTA.onStart([]() {});
   ArduinoOTA.onEnd([]() {
     digitalWrite(D0, LOW);
@@ -29,13 +62,20 @@ void ota_setup(char* password) {
     else if (error == OTA_END_ERROR);      // End failed
   });
   ArduinoOTA.begin();
-  Homie.getMqttClient().setKeepAlive(10);
 }
 
-void ota_handle() {
+void pre_loop() {
+}
+
+void post_loop() {
+  if ((lastMqttDisconnected > lastMqttConnected && millis() - lastMqttDisconnected > 120 * 1000 || lastWifiDisconnected > lastWifiConnected && millis() - lastWifiDisconnected > 120 * 1000) && !restartInitiated) {
+    restartInitiated = true;
+    Serial.println("Restarting");
+    ESP.restart();
+  }
   ArduinoOTA.handle();
 }
-void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader r){
+void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader& r){
   if (millis() - d.lastRead >= s.intervalRead) {
     double v = r();
     if (!isnan(v) && d.vLast != v && d.vCurr == DBL_MAX) {
