@@ -8,7 +8,7 @@ void ota_setup(char* password) {
   ArduinoOTA.onStart([]() {});
   ArduinoOTA.onEnd([]() {
     digitalWrite(D0, LOW);
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 10; i++)
        {
          digitalWrite(D0, HIGH);
          delay(i * 2);
