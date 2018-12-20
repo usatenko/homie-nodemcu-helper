@@ -33,12 +33,12 @@ void onHomieEvent(const HomieEvent& event) {
 }
 
 void pre_setup() {
-  lastWifiConnected = 0;
+/*  lastWifiConnected = 0;
   lastWifiDisconnected = millis();
   lastMqttConnected = 0;
   lastMqttDisconnected = millis();
   restartInitiated = false;
-  Homie.onEvent(onHomieEvent);
+*/  Homie.onEvent(onHomieEvent);
 }
 
 void post_setup(char* ota_password) {
