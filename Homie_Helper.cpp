@@ -77,6 +77,7 @@ void post_loop() {
     restartInitiated = true;
     Serial.println("Restarting");
     ESP.restart();
+    return;
   }
   ArduinoOTA.handle();
 }
