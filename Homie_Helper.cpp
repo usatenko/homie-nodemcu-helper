@@ -10,7 +10,7 @@ long lastMqttDisconnected = millis();
 bool restartInitiated = false;
 void onHomieEvent(const HomieEvent& event) {
   switch(event.type) {
-    case HOMIE_NORMAL_MODE:
+    case HomieEventType::NORMAL_MODE:
       long lastWifiConnected = 0;
       long lastWifiDisconnected = millis();
       long lastMqttConnected = 0;
