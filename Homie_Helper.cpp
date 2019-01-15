@@ -11,11 +11,11 @@ bool restartInitiated = false;
 void onHomieEvent(const HomieEvent& event) {
   switch(event.type) {
     case HomieEventType::NORMAL_MODE:
-      long lastWifiConnected = 0;
-      long lastWifiDisconnected = millis();
-      long lastMqttConnected = 0;
-      long lastMqttDisconnected = millis();
-      bool restartInitiated = false;
+      lastWifiConnected = 0;
+      lastWifiDisconnected = millis();
+      lastMqttConnected = 0;
+      lastMqttDisconnected = millis();
+      restartInitiated = false;
       break;
     case HomieEventType::WIFI_CONNECTED:
       // Do whatever you want when Wi-Fi is connected in normal mode
