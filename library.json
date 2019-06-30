@@ -10,5 +10,5 @@
         "include": "OneWire"
     },
     "frameworks": "arduino",
-    "platforms": "espressif8266"
+    "platforms": "espressif8266@2.0.4"
 }
