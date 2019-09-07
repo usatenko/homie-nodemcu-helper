@@ -91,6 +91,7 @@ void post_loop() {
 void readSend(HomieNode& n, Data& d, Setting& s, THandlerFunction_Reader& r){
   if (millis() - d.lastRead >= s.intervalRead) {
     double v = r();
+    d.lastRead = millis();
     if (!isnan(v) && d.vLast != v && d.vCurr == DBL_MAX) {
       d.vLast = v;
       d.vCurr = v;
